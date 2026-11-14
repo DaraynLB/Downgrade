@@ -34,3 +34,22 @@ Build under test: 1.7 DLL deployed 2026-11-11 20:09:14.
 | 2026-11-13 | T036b / decision 15 | Dry run Medieval on Hákon (BS_Jotun_Hunter, Niflheim giant) | ✅ PASS | L437 removed only [Apparel_BasicShirt] (hyperweave, Spacer material on a Medieval def); steel barbarian armor and megasloth wool pants kept |
 | 2026-11-13 | T036b / decision 15 | Dry run Neolithic on Hákon | ✅ PASS | L456 removed [BS_BarbarianArmor (steel), Apparel_BasicShirt, Apparel_Pants (wool)]; added Parka/Leather_Elephant, TribalA/Leather_Bear; Giant bow kept |
 | 2026-11-13 | T036b + US1 sc.6 | Real reroll Hákon to Medieval; replacement fits a giant | ✅ PASS | L475 BasicShirt → CollarShirt/Leather_GuineaPig; gear tab shows it worn. Only red lines in session are vanilla (Steam WorkshopItem, low-points raid strategy) |
+| 2026-11-14 | T040a | Batch log line built and deployed (1.7 DLL 09:47:08); game relaunched 09:48 | — | Player.log L300 Loaded, 65 races (B&S on), CE off |
+| 2026-11-14 | A6 / US2 | 23 selected (20 Mercenary_Gunner + 2 muffalo + 1 scyther) show one Reroll button | ✅ PASS | Screenshot: "(various) x23", single "Reroll gear" gizmo |
+| 2026-11-14 | A6 / US2 | Each gunner rerolled independently to Neolithic | ✅ PASS | L392–L791: 20 `Reroll` lines, each with its own budget and picks |
+| 2026-11-14 | A6 / US2 sc.2 | Animals and mechanoid counted as skipped | ✅ PASS | L812 `Batch to Neolithic: 20 rerolled, 3 skipped (3 with no button) in 36 ms.`; on screen "Rerolled 20 pawn(s) to Neolithic. 3 skipped." |
+| 2026-11-14 | SC-002 | No visible pause for 20 pawns | ✅ PASS | L812: 36 ms for the batch |
+| 2026-11-14 | A7 / FR-002 | Last era written to settings | ✅ PASS | Mod_Downgrade_DowngradeMod.xml `<lastPickedEra>Neolithic</lastPickedEra>` |
+| 2026-11-14 | note | Raj got Apparel_TribalA/Leather_Human (L749) | ⚠ design question | Human leather is Neolithic-legal; ask client whether to exclude it |
+| 2026-11-14 | A6 | One era menu for the 23-pawn selection | ✅ PASS | Screenshot: single menu Neolithic (last used) / Medieval / Industrial / Spacer / Ultra |
+| 2026-11-14 | A7 / FR-002 | "(last used)" right after the pick | ✅ PASS | Same screenshot: "Neolithic (last used)" |
+| 2026-11-14 | A7 / FR-002 | "(last used)" after save and reload | ✅ PASS | L853 `Loading game from file dg-us2`; screenshot: Wilson's menu "Neolithic (last used)", tooltip "Last era: Neolithic." |
+| 2026-11-14 | A15 | Errors in US2 window | ✅ none from Downgrade | Only L832/L874 Gene_553 warnings: a Big and Small world pawn (BS_AuthorityLord) whose Delicate trait points at an unsaved gene; never rerolled, not Downgrade |
+| 2026-11-14 | A8 setup | Drifter as "poor pawn" | — procedure | 5 Drifters all `Skip …: nothing above Medieval` (L932–L1096): vanilla Drifters carry only Medieval-or-lower gear (correct, as A4). Used a Scavenger instead |
+| 2026-11-14 | A8 / US3 | Rich vs poor pawn to Medieval | ✅ PASS | L1137 Costa (Scavenger) W=255 A=0 → crossbow Normal, no traits, pool 5 discarded 5. L891 Necro (Mercenary_Elite) W=355 A=450 → crossbow Good, pants Masterwork, trait fast walker 200 from pool 210, discarded 10. Gear-tab screenshot matches the last reroll |
+| 2026-11-14 | A8 / FR-017 | Quality never above Masterwork | ✅ PASS | No Legendary in any of 11 US3 lines or the 20 US2 lines |
+| 2026-11-14 | A9 / SC-003 | Same pawn rerolled 10× keeps its budget | ✅ PASS | L891, L1178, L1219, L1260, L1301, L1342, L1383, L1424, L1465, L1539 all W=355 A=450 I=0; apparel spend 285–435, no downward trend |
+| 2026-11-14 | A9 / FR-018 | Previously added trait removed on the next reroll | ✅ PASS (log) | L1178 removed [… trait:SpeedOffset]; pool 60 too small for a new trait |
+| 2026-11-14 | A9 / FR-018 | Trait removed in-game, not just in the plan | ✅ PASS | Bio screenshot: Necro traits = Cannibal only (no Fast walker) |
+| 2026-11-14 | A14 / SC-006 | Budget unchanged after save and reload | ✅ PASS | L1574 `Loading game from file dg-us3`; L1591 Necro W=355 A=450 (same as L891–L1539); gear screenshot matches (Foxfur pants masterwork, heavy crossbow good) |
+| 2026-11-14 | A15 / SC-007 | Whole US2+US3 session: no red errors from Downgrade | ✅ PASS | ERROR count 0 after startup apart from vanilla L198 Steam WorkshopItem |

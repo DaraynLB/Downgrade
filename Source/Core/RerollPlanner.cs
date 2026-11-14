@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
@@ -54,7 +55,12 @@ namespace Downgrade
             PlanWeapons(plan, weapons);
             PlanApparel(plan, apparel);
 
-            plan.discarded = plan.budgets.Values.Sum(b => b.Leftover);
+            // PRD B3: gear → quality (per category) → traits (pooled) → the rest is discarded.
+            PlanQuality(plan, GearCategory.Weapon);
+            PlanQuality(plan, GearCategory.Apparel);
+            PlanTraits(plan, record);
+
+            plan.discarded = Mathf.Max(0f, plan.traitPool - plan.traitSpent);
             return plan;
         }
 
@@ -263,6 +269,100 @@ namespace Downgrade
                     continue; // FR-008: the slot is left empty
                 Spend(plan, GearCategory.Apparel, r, choice);
                 worn.Add(choice.def);
+            }
+        }
+
+        // ---------- Quality (FR-017, Clarifications 2026-11-05) ----------
+
+        /// <summary>
+        /// Each category's leftover raises only its own items: one step at a time, always the cheapest
+        /// next step among that category's planned items, up to the quality cap, until the next step is
+        /// unaffordable. A category that used the cheapest-item fallback has nothing left (FR-016).
+        /// </summary>
+        private static void PlanQuality(RerollPlan plan, GearCategory cat)
+        {
+            var budget = plan.Budget(cat);
+            if (budget.usedFallback)
+                return;
+
+            var cap = Settings.EffectiveQualityCap;
+            var items = plan.addThings.Where(p => p.category == cat && Pricing.HasQuality(p.def)).ToList();
+            var nextCost = items.ToDictionary(p => p, StepCost);
+
+            while (true)
+            {
+                PlannedThing best = null;
+                float bestCost = float.PositiveInfinity;
+                foreach (var p in items)
+                {
+                    if (p.quality < cap && nextCost[p] < bestCost)
+                    {
+                        best = p;
+                        bestCost = nextCost[p];
+                    }
+                }
+                if (best == null || bestCost > budget.Remaining)
+                    return;
+
+                best.quality++;
+                budget.qualitySpent += bestCost;
+                nextCost[best] = StepCost(best);
+            }
+        }
+
+        private static float StepCost(PlannedThing p) => Pricing.QualityStepCost(p.def, p.stuff, p.quality);
+
+        // ---------- Traits (FR-018, research R13) ----------
+
+        /// <summary>
+        /// All three leftovers pool into whitelisted traits. Traits Downgrade added last time are removed
+        /// and bought again from this pool, so rerolling never stacks them. Picks are uniform random among
+        /// enabled, affordable entries the pawn doesn't have and that don't conflict, one at a time.
+        /// </summary>
+        private static void PlanTraits(RerollPlan plan, RerollRecord record)
+        {
+            plan.traitPool = plan.budgets.Values.Sum(b => b.Leftover);
+            var traits = plan.pawn.story?.traits;
+            if (traits == null)
+                return;
+
+            foreach (var added in record.addedTraits)
+            {
+                var t = traits.GetTrait(added.def, added.degree);
+                if (t != null && !plan.removeTraits.Contains(t))
+                    plan.removeTraits.Add(t);
+            }
+
+            int limit = Math.Min(Settings.maxTraitsAdded, DowngradeDefOf.Downgrade_Tuning.maxTraitsCeiling);
+            if (limit <= 0)
+                return;
+
+            var candidates = new List<PlannedTrait>();
+            foreach (var kv in Settings.traitCosts)
+            {
+                if (kv.Value == null || !kv.Value.enabled)
+                    continue;
+                if (!DowngradeSettings.TryParseTraitKey(kv.Key, out var def, out int degree))
+                    continue;
+                candidates.Add(new PlannedTrait { def = def, degree = degree, cost = Math.Max(0, kv.Value.cost) });
+            }
+
+            // What the pawn will have: current traits minus planned removals, plus planned additions.
+            var have = traits.allTraits.Where(t => !plan.removeTraits.Contains(t)).Select(t => t.def).ToList();
+
+            while (plan.addTraits.Count < limit)
+            {
+                float left = plan.traitPool - plan.traitSpent;
+                var options = candidates.Where(c => c.cost <= left && !have.Contains(c.def)
+                                                    && !have.Any(h => h.ConflictsWith(c.def) || c.def.ConflictsWith(h)))
+                    .ToList();
+                if (options.Count == 0)
+                    return;
+
+                var pick = options.RandomElement();
+                plan.addTraits.Add(pick);
+                plan.traitSpent += pick.cost;
+                have.Add(pick.def);
             }
         }
     }

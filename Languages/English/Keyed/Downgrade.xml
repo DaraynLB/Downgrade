@@ -9,5 +9,6 @@
   <!-- Result messages -->
   <Downgrade.Result.Rerolled>Rerolled {0} pawn(s) to {1}.</Downgrade.Result.Rerolled>
   <Downgrade.Result.NothingAbove>{0} has no gear above {1}.</Downgrade.Result.NothingAbove>
+  <Downgrade.Result.Skipped>{0} skipped.</Downgrade.Result.Skipped>
 
 </LanguageData>

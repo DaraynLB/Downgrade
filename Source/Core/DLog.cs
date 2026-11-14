@@ -33,6 +33,10 @@ namespace Downgrade
         public static void Skip(Pawn p, TechLevel era) =>
             Log.Message($"{Prefix}Skip {p.LabelShort}: nothing above {Eras.Label(era)}.");
 
+        public static void Batch(TechLevel era, int rerolled, int skipped, int noButton, long ms) =>
+            Log.Message($"{Prefix}Batch to {Eras.Label(era)}: {rerolled} rerolled, {skipped} skipped " +
+                        $"({noButton} with no button) in {ms} ms.");
+
         public static void RerollFailed(Pawn p, string reason) =>
             Log.Warning($"{Prefix}Reroll failed for {p.LabelShort}, left unchanged: {reason}");
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using RimWorld;
 using Verse;
 
@@ -50,6 +51,23 @@ namespace Downgrade
         }
 
         public static string TraitKey(TraitDef def, int degree) => def.defName + ":" + degree;
+
+        /// <summary>
+        /// Resolves a <see cref="TraitKey"/>. False when the trait no longer exists (its mod was removed)
+        /// or has no such degree; the entry is kept in settings but ignored (data-model Validation).
+        /// </summary>
+        public static bool TryParseTraitKey(string key, out TraitDef def, out int degree)
+        {
+            def = null;
+            degree = 0;
+            int colon = key?.LastIndexOf(':') ?? -1;
+            if (colon <= 0 || !int.TryParse(key.Substring(colon + 1), out degree))
+                return false;
+            def = DefDatabase<TraitDef>.GetNamedSilentFail(key.Substring(0, colon));
+            int d = degree;
+            // Not DataAtDegree: it logs an error and falls back to the first degree when missing.
+            return def?.degreeDatas != null && def.degreeDatas.Any(x => x.degree == d);
+        }
 
         public void SeedTraitCostsIfEmpty()
         {

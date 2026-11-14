@@ -85,6 +85,11 @@ namespace Downgrade
                     foreach (var stack in a.stacks)
                         tx.Put(stack, GearSlot.Inventory);
                 }
+                // Traits after gear (FR-018): last reroll's traits out, this reroll's in.
+                foreach (var t in plan.removeTraits)
+                    tx.RemoveTrait(t);
+                foreach (var t in plan.addTraits)
+                    tx.GainTrait(new Trait(t.def, t.degree));
             }
             catch (Exception e)
             {
@@ -106,6 +111,10 @@ namespace Downgrade
         {
             var thing = ThingMaker.MakeThing(p.def, p.stuff);
             thing.stackCount = p.stackCount;
+            // FR-017: quality bought from the leftover. With Itemization Overhaul, its own hooks roll
+            // the tier's bonuses from this (research R7).
+            if (p.quality != QualityCategory.Normal)
+                thing.TryGetComp<CompQuality>()?.SetQuality(p.quality, ArtGenerationContext.Outsider);
             return thing;
         }
 
@@ -161,6 +170,7 @@ namespace Downgrade
             r.givenThings = plan.addThings.Select(p => p.made)
                 .Concat(ammo.SelectMany(a => a.stacks))
                 .ToList();
+            r.addedTraits = plan.addTraits.Select(t => new AddedTrait { def = t.def, degree = t.degree }).ToList();
             r.lastEra = plan.era;
         }
     }

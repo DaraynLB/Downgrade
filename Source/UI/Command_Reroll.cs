@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
@@ -24,10 +25,26 @@ namespace Downgrade
             icon = IconTex;
         }
 
-        public override void ProcessInput(Event ev)
+        // Research R2: every selected pawn's button groups into one. The game calls ProcessInput on the
+        // clicked button and then ProcessGroupInput with the whole group (a group of one for a single
+        // pawn), so the era menu opens there, once. Siblings must not run ProcessInput themselves.
+        public override bool GroupsWith(Gizmo other) => other is Command_Reroll;
+
+        public override bool InheritInteractionsFrom(Gizmo other) => false;
+
+        public override void ProcessGroupInput(Event ev, List<Gizmo> group)
         {
-            base.ProcessInput(ev);
-            OpenEraMenu(new List<Pawn> { pawn });
+            base.ProcessGroupInput(ev, group);
+            var pawns = new List<Pawn> { pawn };
+            if (group != null)
+            {
+                foreach (var g in group)
+                {
+                    if (g is Command_Reroll c && c.pawn != null && !pawns.Contains(c.pawn))
+                        pawns.Add(c.pawn);
+                }
+            }
+            OpenEraMenu(pawns);
         }
 
         public static void OpenEraMenu(List<Pawn> pawns)
@@ -46,19 +63,50 @@ namespace Downgrade
 
         public static void Run(List<Pawn> pawns, TechLevel era)
         {
+            // FR-002: remembered across saves, reloads and new games.
+            Settings.lastPickedEra = era;
+            DowngradeMod.Instance.WriteSettings();
+
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             int rerolled = 0, skipped = 0;
+            var lastOutcome = RerollOutcome.Failed;
             foreach (var p in pawns)
             {
-                var outcome = RerollExecutor.Execute(p, era);
-                if (outcome == RerollOutcome.Rerolled)
+                // FR-019: one pawn's failure never stops the others. Execute already catches its own
+                // failures; this is the backstop for anything it doesn't.
+                try
+                {
+                    lastOutcome = RerollExecutor.Execute(p, era);
+                }
+                catch (Exception e)
+                {
+                    DLog.RerollFailed(p, e.Message);
+                    lastOutcome = RerollOutcome.Failed;
+                }
+                if (lastOutcome == RerollOutcome.Rerolled)
                     rerolled++;
                 else
                     skipped++;
             }
 
-            string text = pawns.Count == 1 && rerolled == 0
-                ? "Downgrade.Result.NothingAbove".Translate(pawns[0].LabelShort, Eras.Label(era)).ToString()
-                : "Downgrade.Result.Rerolled".Translate(rerolled, Eras.Label(era)).ToString();
+            // US2 scenario 2: selected pawns with no Reroll button (animals, mechanoids, disabled
+            // categories) are counted as skipped too.
+            var batch = new HashSet<Pawn>(pawns);
+            int noButton = Find.Selector.SelectedPawns.Count(p => !batch.Contains(p));
+            skipped += noButton;
+            DLog.Batch(era, rerolled, skipped, noButton, watch.ElapsedMilliseconds);
+
+            string text;
+            if (pawns.Count == 1 && noButton == 0 && lastOutcome == RerollOutcome.NothingAbove)
+            {
+                text = "Downgrade.Result.NothingAbove".Translate(pawns[0].LabelShort, Eras.Label(era));
+            }
+            else
+            {
+                text = "Downgrade.Result.Rerolled".Translate(rerolled, Eras.Label(era));
+                if (skipped > 0)
+                    text += " " + "Downgrade.Result.Skipped".Translate(skipped).Resolve();
+            }
             Messages.Message(text, MessageTypeDefOf.NeutralEvent, historical: false);
         }
     }
