@@ -1,0 +1,15 @@
+.claude/
+Source/bin/
+Source/obj/
+*.user
+
+# Build output (rebuilt by `dotnet build` from Source/)
+1.6/Assemblies/*.dll
+1.7/Assemblies/*.dll
+*.pdb
+
+# Spec Kit tooling/config (the specs themselves, under specs/, stay tracked)
+.specify/
+
+# rimworld-mod-testing scratch
+.test-checkpoint

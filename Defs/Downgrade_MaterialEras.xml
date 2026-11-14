@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Materials allowed per era (PRD §4.4). A material is allowed in an era if it is listed
+       at or below that era. Materials in no list get an era guessed from their per-unit
+       market value (priceThresholds), which the player can change in mod settings.
+       Other mods can add their materials by patching these lists. -->
+  <Downgrade.MaterialEraDef>
+    <defName>Downgrade_MaterialEras</defName>
+    <label>materials by era</label>
+    <neolithic>
+      <!-- wood, stone, leathers, plant cloth -->
+      <li>WoodLog</li>
+      <li>BlocksSandstone</li>
+      <li>BlocksGranite</li>
+      <li>BlocksLimestone</li>
+      <li>BlocksSlate</li>
+      <li>BlocksMarble</li>
+      <li>Cloth</li>
+      <li>Leather_Plain</li>
+      <li>Leather_Dog</li>
+      <li>Leather_Wolf</li>
+      <li>Leather_Panthera</li>
+      <li>Leather_Camel</li>
+      <li>Leather_Bluefur</li>
+      <li>Leather_Bear</li>
+      <li>Leather_GuineaPig</li>
+      <li>Leather_Human</li>
+      <li>Leather_Pig</li>
+      <li>Leather_Light</li>
+      <li>Leather_Bird</li>
+      <li>Leather_Chinchilla</li>
+      <li>Leather_Fox</li>
+      <li>Leather_Lizard</li>
+      <li>Leather_Elephant</li>
+      <li>Leather_Heavy</li>
+      <li>Leather_Rhinoceros</li>
+      <li>Leather_Thrumbo</li>
+      <li>Leather_Patch</li>
+      <li>Leather_Dread</li>
+    </neolithic>
+    <medieval>
+      <!-- adds steel, silver, gold, jade, wool -->
+      <li>Steel</li>
+      <li>Silver</li>
+      <li>Gold</li>
+      <li>Jade</li>
+      <li>WoolSheep</li>
+      <li>WoolAlpaca</li>
+      <li>WoolMegasloth</li>
+      <li>WoolMuffalo</li>
+      <li>WoolBison</li>
+    </medieval>
+    <industrial>
+      <!-- adds synthread, devilstrand -->
+      <li>Synthread</li>
+      <li>DevilstrandCloth</li>
+    </industrial>
+    <spacer>
+      <!-- adds plasteel, hyperweave, uranium -->
+      <li>Plasteel</li>
+      <li>Hyperweave</li>
+      <li>Uranium</li>
+    </spacer>
+    <ultra />
+    <!-- Guess for unknown materials, by per-unit market value: at or below the neolithic
+         bound is Neolithic, and so on; above the spacer bound is Ultra. -->
+    <priceThresholds>
+      <neolithic>2.1</neolithic>
+      <medieval>4.0</medieval>
+      <industrial>6.0</industrial>
+      <spacer>15.0</spacer>
+    </priceThresholds>
+  </Downgrade.MaterialEraDef>
+</Defs>

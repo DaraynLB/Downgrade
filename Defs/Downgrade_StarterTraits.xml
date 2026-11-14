@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Starter trait whitelist (PRD §4.5): combat traits that leftover budget can buy, with
+       their silver cost. Copied into mod settings on first run; the player edits it there. -->
+  <Downgrade.TraitWhitelistDef>
+    <defName>Downgrade_StarterTraits</defName>
+    <label>starter trait whitelist</label>
+    <traits>
+      <li><trait>Tough</trait><degree>0</degree><cost>600</cost></li>
+      <li><trait>Nimble</trait><degree>0</degree><cost>500</cost></li>
+      <!-- Careful shooter -->
+      <li><trait>ShootingAccuracy</trait><degree>1</degree><cost>400</cost></li>
+      <li><trait>Brawler</trait><degree>0</degree><cost>300</cost></li>
+      <!-- Trigger-happy -->
+      <li><trait>ShootingAccuracy</trait><degree>-1</degree><cost>300</cost></li>
+      <!-- Iron-willed -->
+      <li><trait>Nerves</trait><degree>2</degree><cost>300</cost></li>
+      <!-- Jogger -->
+      <li><trait>SpeedOffset</trait><degree>2</degree><cost>300</cost></li>
+      <!-- Steadfast -->
+      <li><trait>Nerves</trait><degree>1</degree><cost>200</cost></li>
+      <!-- Fast walker -->
+      <li><trait>SpeedOffset</trait><degree>1</degree><cost>200</cost></li>
+      <li><trait>Bloodlust</trait><degree>0</degree><cost>200</cost></li>
+    </traits>
+  </Downgrade.TraitWhitelistDef>
+</Defs>

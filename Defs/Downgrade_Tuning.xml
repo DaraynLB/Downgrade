@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Balance constants (Principle IV). Changing a value here must also update
+       docs/settings-guide.md where the value is described. -->
+  <Downgrade.TuningDef>
+    <defName>Downgrade_Tuning</defName>
+    <label>Downgrade tuning</label>
+    <!-- Candidates priced >= this fraction of the most expensive affordable one count as
+         "best it can afford" and are picked by weighted random. -->
+    <affordableBand>0.5</affordableBand>
+    <!-- Combat Extended: spare magazines of ammo given per new ranged weapon. -->
+    <ceAmmoMagazines>4</ceAmmoMagazines>
+    <!-- Upper end of the "max traits added" slider. -->
+    <maxTraitsCeiling>5</maxTraitsCeiling>
+  </Downgrade.TuningDef>
+</Defs>

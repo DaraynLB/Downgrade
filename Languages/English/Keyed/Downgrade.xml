@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <!-- Reroll command -->
+  <Downgrade.Command.Label>Reroll gear</Downgrade.Command.Label>
+  <Downgrade.Command.Desc>Replace this pawn's gear above the chosen era with era gear of the same value. Last era: {0}.</Downgrade.Command.Desc>
+  <Downgrade.LastUsed>(last used)</Downgrade.LastUsed>
+
+  <!-- Result messages -->
+  <Downgrade.Result.Rerolled>Rerolled {0} pawn(s) to {1}.</Downgrade.Result.Rerolled>
+  <Downgrade.Result.NothingAbove>{0} has no gear above {1}.</Downgrade.Result.NothingAbove>
+
+</LanguageData>
